@@ -1,4 +1,4 @@
-name: Deploy J.A.R.V.I.S. to GitHub Pages
+name: Deploy AI Assistant to GitHub Pages
 
 on:
   push:
