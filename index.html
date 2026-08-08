@@ -13,170 +13,672 @@
             --stark-grid: rgba(0, 243, 255, 0.05);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0; background-color: var(--stark-dark);
-            background-image: linear-gradient(var(--stark-grid) 1px, transparent 1px), linear-gradient(90deg, var(--stark-grid) 1px, transparent 1px);
-            background-size: 40px 40px; color: var(--stark-cyan); font-family: 'Orbitron', sans-serif;
-            overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-color: var(--stark-dark);
+            background-image: 
+                linear-gradient(var(--stark-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--stark-grid) 1px, transparent 1px);
+            background-size: 40px 40px;
+            color: var(--stark-cyan);
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        #boot-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 1000; border: 2px solid var(--stark-cyan); box-shadow: 0 0 50px var(--stark-cyan) inset;
+        /* Boot Screen */
+        #boot-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
         }
-        #boot-modal.hidden { display: none; }
-        #boot-modal h1 { font-size: 2rem; margin-bottom: 10px; text-shadow: 0 0 10px var(--stark-cyan); }
-        #boot-modal p { font-family: 'Share Tech Mono', monospace; color: #888; margin-bottom: 20px; max-width: 400px; text-align: center; }
-        #api-key-input {
-            background: transparent; border: 1px solid var(--stark-cyan); color: var(--stark-cyan); padding: 15px;
-            font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; width: 300px; text-align: center; outline: none; margin-bottom: 20px;
+        #boot-screen.hidden { display: none; }
+        #boot-screen h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px var(--stark-cyan);
+            margin-bottom: 20px;
+            letter-spacing: 5px;
         }
-        #boot-btn {
-            background: var(--stark-cyan); color: black; border: none; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
-            font-weight: bold; font-size: 1.2rem; cursor: pointer; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); transition: 0.3s;
+        #boot-screen p {
+            font-family: 'Share Tech Mono', monospace;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
         }
-        #boot-btn:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
+        .boot-input {
+            background: transparent;
+            border: 1px solid var(--stark-cyan);
+            color: var(--stark-cyan);
+            padding: 15px 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            width: 350px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        .boot-btn {
+            background: var(--stark-cyan);
+            color: #000;
+            border: none;
+            padding: 15px 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        .boot-btn:hover {
+            background: #fff;
+            box-shadow: 0 0 30px var(--stark-cyan);
+            transform: scale(1.05);
+        }
 
-        /* Settings Gear */
-        #settings-btn {
-            position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--stark-cyan);
-            color: var(--stark-cyan); width: 45px; height: 45px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 100;
+        /* Main HUD */
+        .hud-top {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            opacity: 0.6;
         }
-        #settings-btn:hover { background: var(--stark-cyan); color: black; box-shadow: 0 0 15px var(--stark-cyan); transform: rotate(90deg); }
 
-        /* Settings Modal */
-        #settings-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
-            z-index: 2000; backdrop-filter: blur(10px);
+        .arc-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #settings-modal.hidden { display: none; }
-        .settings-panel {
-            background: rgba(5, 15, 25, 0.95); border: 1px solid var(--stark-cyan); padding: 40px; width: 400px;
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3) inset, 0 0 20px var(--stark-cyan);
-            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
-        }
-        .settings-panel h2 { margin-top: 0; border-bottom: 1px solid var(--stark-cyan); padding-bottom: 10px; letter-spacing: 3px; font-size: 1.2rem; }
-        .settings-group { margin-bottom: 25px; }
-        .settings-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
-        .settings-group input, .settings-group select {
-            width: 100%; background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.3); color: var(--stark-cyan);
-            padding: 12px; font-family: 'Share Tech Mono', monospace; font-size: 1rem; outline: none; box-sizing: border-box;
-        }
-        .settings-group select option { background: #050505; color: var(--stark-cyan); }
-        .settings-actions { display: flex; gap: 15px; margin-top: 30px; }
-        .btn-stark { flex: 1; padding: 12px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; font-size: 0.9rem; }
-        .btn-save { background: var(--stark-cyan); color: black; }
-        .btn-save:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
-        .btn-cancel { background: transparent; border: 1px solid #ff3333; color: #ff3333; }
-        .btn-cancel:hover { background: #ff3333; color: white; }
 
-        .hud-top { position: absolute; top: 20px; left: 0; width: 100%; text-align: center; font-size: 0.8rem; letter-spacing: 5px; opacity: 0.7; }
-        .arc-reactor-container { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; }
         .arc-reactor {
-            width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%);
-            box-shadow: 0 0 50px var(--stark-cyan), 0 0 100px var(--stark-blue); animation: pulse 4s infinite ease-in-out; transition: all 0.3s ease;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 30%, transparent 70%);
+            box-shadow: 0 0 60px var(--stark-cyan), 0 0 120px var(--stark-blue);
+            transition: all 0.3s ease;
         }
-        .ring { position: absolute; border: 2px solid var(--stark-cyan); border-radius: 50%; opacity: 0.3; }
-        .ring-1 { width: 200px; height: 200px; animation: spin 10s linear infinite; border-style: dashed; }
-        .ring-2 { width: 260px; height: 260px; animation: spin-reverse 15s linear infinite; border-width: 1px; }
 
-        .arc-reactor.listening { background: radial-gradient(circle, #fff 0%, #00ff00 40%, transparent 70%); box-shadow: 0 0 50px #00ff00; animation: pulse-fast 0.5s infinite alternate; }
-        .arc-reactor.thinking { background: radial-gradient(circle, #fff 0%, #ffaa00 40%, transparent 70%); box-shadow: 0 0 50px #ffaa00; animation: pulse-fast 0.2s infinite alternate; }
-        .arc-reactor.speaking { background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%); box-shadow: 0 0 80px var(--stark-cyan); transform: scale(1.2); }
+        .ring {
+            position: absolute;
+            border: 2px solid var(--stark-cyan);
+            border-radius: 50%;
+            opacity: 0.25;
+        }
+        .ring-1 { width: 220px; height: 220px; animation: spin 8s linear infinite; border-style: dashed; }
+        .ring-2 { width: 280px; height: 280px; animation: spin-rev 12s linear infinite; border-width: 1px; }
+        .ring-3 { width: 320px; height: 320px; animation: spin 20s linear infinite; border-style: dotted; opacity: 0.15; }
 
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
-        @keyframes pulse-fast { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        /* States */
+        .arc-reactor.listening {
+            background: radial-gradient(circle, #fff 0%, #00ff88 30%, transparent 70%);
+            box-shadow: 0 0 60px #00ff88, 0 0 120px #00aa55;
+            animation: pulse 1s infinite alternate;
+        }
+        .arc-reactor.thinking {
+            background: radial-gradient(circle, #fff 0%, #ffaa00 30%, transparent 70%);
+            box-shadow: 0 0 60px #ffaa00, 0 0 120px #ff6600;
+            animation: pulse 0.3s infinite alternate;
+        }
+        .arc-reactor.speaking {
+            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 30%, transparent 70%);
+            box-shadow: 0 0 100px var(--stark-cyan), 0 0 200px var(--stark-blue);
+            transform: scale(1.15);
+            animation: speak-pulse 0.5s infinite alternate;
+        }
 
+        @keyframes pulse { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+        @keyframes speak-pulse { from { transform: scale(1.1); } to { transform: scale(1.25); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin-rev { to { transform: rotate(-360deg); } }
+
+        #status-text {
+            position: absolute;
+            bottom: 260px;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Log Panel */
         #log-panel {
-            position: absolute; bottom: 20px; width: 80%; max-width: 800px; height: 200px; background: rgba(0, 20, 40, 0.6);
-            border: 1px solid var(--stark-cyan); border-radius: 10px; padding: 20px; font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem; overflow-y: auto; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2) inset;
+            position: absolute;
+            bottom: 20px;
+            width: 85%;
+            max-width: 900px;
+            height: 180px;
+            background: rgba(0, 15, 30, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            line-height: 1.6;
         }
-        .log-entry { margin-bottom: 8px; line-height: 1.4; }
         .log-user { color: #fff; }
         .log-ai { color: var(--stark-cyan); text-shadow: 0 0 5px var(--stark-cyan); }
         .log-sys { color: #ffaa00; font-style: italic; }
-        #status-text { position: absolute; bottom: 240px; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; }
+        .log-err { color: #ff4444; font-weight: bold; }
+
+        /* Settings */
+        #settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid var(--stark-cyan);
+            color: var(--stark-cyan);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        #settings-btn:hover {
+            background: var(--stark-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--stark-cyan);
+            transform: rotate(90deg);
+        }
+
+        #settings-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            backdrop-filter: blur(10px);
+        }
+        #settings-modal.hidden { display: none; }
+        .settings-panel {
+            background: rgba(5, 15, 30, 0.98);
+            border: 1px solid var(--stark-cyan);
+            padding: 40px;
+            width: 420px;
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2) inset;
+            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
+        }
+        .settings-panel h2 {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--stark-cyan);
+            padding-bottom: 12px;
+            letter-spacing: 3px;
+            font-size: 1.1rem;
+        }
+        .s-group { margin-bottom: 22px; }
+        .s-group label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .s-group input, .s-group select {
+            width: 100%;
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            color: var(--stark-cyan);
+            padding: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+        }
+        .s-group select option { background: #050505; }
+        .s-actions { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 14px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; transition: 0.3s; }
+        .btn-save { background: var(--stark-cyan); color: #000; }
+        .btn-save:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
+        .btn-cancel { background: transparent; border: 1px solid #ff4444; color: #ff4444; }
+        .btn-cancel:hover { background: #ff4444; color: #fff; }
+
+        /* Debug indicator */
+        #debug-dot {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            transition: background 0.3s;
+        }
+        #debug-dot.connected { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        #debug-dot.error { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
     </style>
 </head>
 <body>
 
-    <div id="boot-modal">
-        <h1>J.A.R.V.I.S. INITIALIZATION</h1>
-        <p>Enter your Gemini API Key to establish secure uplink.</p>
-        <input type="password" id="api-key-input" placeholder="API KEY">
-        <button id="boot-btn" onclick="bootJarvis()">ESTABLISH UPLINK</button>
+    <!-- BOOT SCREEN - USER MUST CLICK THIS -->
+    <div id="boot-screen">
+        <h1>J.A.R.V.I.S.</h1>
+        <p>ENTER API KEY AND CLICK TO INITIALIZE AUDIO SYSTEMS</p>
+        <input type="password" class="boot-input" id="api-key-input" placeholder="GEMINI API KEY">
+        <button class="boot-btn" id="boot-btn">⚡ INITIALIZE</button>
     </div>
 
+    <!-- MAIN HUD -->
+    <div id="debug-dot"></div>
+    <div class="hud-top">STARK INDUSTRIES // JARVIS ONLINE</div>
+    
     <button id="settings-btn" onclick="openSettings()">⚙️</button>
 
+    <div class="arc-container">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div id="arc-reactor" class="arc-reactor"></div>
+    </div>
+
+    <div id="status-text">OFFLINE</div>
+
+    <div id="log-panel">
+        <div class="log-sys">> Awaiting initialization...</div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
     <div id="settings-modal" class="hidden">
         <div class="settings-panel">
-            <h2>SYSTEM CONFIGURATION</h2>
-            <div class="settings-group">
-                <label>Gemini API Key</label>
-                <input type="password" id="settings-api-key" placeholder="Enter API Key">
+            <h2>SYSTEM CONFIG</h2>
+            <div class="s-group">
+                <label>API Key</label>
+                <input type="password" id="s-api-key">
             </div>
-            <div class="settings-group">
-                <label>Voice Core Selection</label>
-                <select id="settings-voice">
-                    <option value="Charon">Charon (Deep / Formal)</option>
-                    <option value="Aoede">Aoede (Warm / Conversational)</option>
-                    <option value="Puck">Puck (Bright / Energetic)</option>
-                    <option value="Kore">Kore (Firm / Authoritative)</option>
-                    <option value="Fenrir">Fenrir (Gruff / Tactical)</option>
+            <div class="s-group">
+                <label>Voice</label>
+                <select id="s-voice">
+                    <option value="Charon">Charon (Deep)</option>
+                    <option value="Aoede">Aoede (Warm)</option>
+                    <option value="Puck">Puck (Bright)</option>
+                    <option value="Kore">Kore (Firm)</option>
+                    <option value="Fenrir">Fenrir (Gruff)</option>
                 </select>
             </div>
-            <div class="settings-actions">
-                <button class="btn-stark btn-save" onclick="saveSettings()">COMPILE & SAVE</button>
-                <button class="btn-stark btn-cancel" onclick="closeSettings()">CANCEL</button>
+            <div class="s-actions">
+                <button class="btn btn-save" onclick="saveSettings()">SAVE</button>
+                <button class="btn btn-cancel" onclick="closeSettings()">CANCEL</button>
             </div>
         </div>
     </div>
 
-    <div class="hud-top">STARK INDUSTRIES // MARK L WEB PROTOCOL</div>
-    <div class="arc-reactor-container">
-        <div class="ring ring-1"></div>
-        <div class="ring ring-2"></div>
-        <div id="arc-reactor" class="arc-reactor"></div>
-    </div>
-    <div id="status-text">SYSTEM IDLE</div>
-    <div id="log-panel">
-        <div class="log-entry log-sys">> AWAITING INITIALIZATION...</div>
-    </div>
-
     <script>
+        // ═══════════════════════════════════════════════════════════
+        // J.A.R.V.I.S. CORE — FIXED AUDIO PIPELINE
+        // ═══════════════════════════════════════════════════════════
+
         const MODEL = "models/gemini-2.0-flash-live-001";
         const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
-        
-        let ws, audioContext, playContext, micStream;
-        let apiKey = localStorage.getItem('gemini_api_key');
-        let selectedVoice = localStorage.getItem('jarvis_voice') || 'Charon';
 
+        let ws = null;
+        let micContext = null;
+        let playContext = null;
+        let micStream = null;
+        let isPlaying = false;
+        let audioQueue = [];
+        let playTimeout = null;
+
+        // DOM Elements
         const reactor = document.getElementById('arc-reactor');
         const statusText = document.getElementById('status-text');
         const logPanel = document.getElementById('log-panel');
-        const modal = document.getElementById('boot-modal');
+        const debugDot = document.getElementById('debug-dot');
+        const bootScreen = document.getElementById('boot-screen');
 
-        if (apiKey) {
-            modal.classList.add('hidden');
-            initAudio();
+        // ═══════════════════════════════════════════════════════════
+        // BOOT SEQUENCE — CRITICAL: User must click to enable audio
+        // ═══════════════════════════════════════════════════════════
+        document.getElementById('boot-btn').addEventListener('click', async () => {
+            const apiKey = document.getElementById('api-key-input').value.trim();
+            if (!apiKey) {
+                log('ERROR: API Key required.', 'err');
+                return;
+            }
+            
+            localStorage.setItem('jarvis_api_key', apiKey);
+            bootScreen.classList.add('hidden');
+            
+            log('Initializing audio systems...', 'sys');
+            await initAudio(apiKey);
+        });
+
+        // Auto-fill from localStorage
+        window.addEventListener('load', () => {
+            const savedKey = localStorage.getItem('jarvis_api_key');
+            if (savedKey) {
+                document.getElementById('api-key-input').value = savedKey;
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════
+        // AUDIO INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        async function initAudio(apiKey) {
+            try {
+                // Create AudioContexts INSIDE the click handler (required by browsers)
+                micContext = new AudioContext({ sampleRate: 16000 });
+                playContext = new AudioContext({ sampleRate: 24000 });
+                
+                // Resume contexts (critical for autoplay policy)
+                await micContext.resume();
+                await playContext.resume();
+                
+                log('AudioContexts created and resumed.', 'sys');
+                log(`Mic: ${micContext.state} | Speaker: ${playContext.state}`, 'sys');
+
+                // Get microphone
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        sampleRate: 16000,
+                        channelCount: 1,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+                log('Microphone access granted.', 'sys');
+
+                // Connect to Gemini
+                connectWebSocket(apiKey);
+
+                // Start mic capture
+                startMicCapture();
+
+            } catch (err) {
+                log(`CRITICAL ERROR: ${err.message}`, 'err');
+                console.error('Audio init failed:', err);
+            }
         }
 
-        function bootJarvis() {
-            const input = document.getElementById('api-key-input').value.trim();
-            if (!input) return;
-            apiKey = input;
-            localStorage.setItem('gemini_api_key', apiKey);
-            modal.classList.add('hidden');
-            initAudio();
+        // ═══════════════════════════════════════════════════════════
+        // MICROPHONE CAPTURE
+        // ═══════════════════════════════════════════════════════════
+        function startMicCapture() {
+            const source = micContext.createMediaStreamSource(micStream);
+            const processor = micContext.createScriptProcessor(4096, 1, 1);
+            
+            processor.onaudioprocess = (e) => {
+                if (!ws || ws.readyState !== WebSocket.OPEN) return;
+                if (isPlaying) return; // Don't send mic while JARVIS is speaking
+                
+                const inputData = e.inputBuffer.getChannelData(0);
+                
+                // Check if there's actual audio (not silence)
+                let hasAudio = false;
+                for (let i = 0; i < inputData.length; i += 100) {
+                    if (Math.abs(inputData[i]) > 0.01) {
+                        hasAudio = true;
+                        break;
+                    }
+                }
+                
+                if (hasAudio) {
+                    setState('listening');
+                    const pcmData = float32ToPcm16(inputData);
+                    const base64 = arrayBufferToBase64(pcmData);
+                    
+                    ws.send(JSON.stringify({
+                        realtimeInput: {
+                            mediaChunks: [{
+                                mimeType: "audio/pcm;rate=16000",
+                                data: base64
+                            }]
+                        }
+                    }));
+                }
+            };
+            
+            source.connect(processor);
+            processor.connect(micContext.destination);
+            log('Microphone capture active.', 'sys');
         }
 
+        // ═══════════════════════════════════════════════════════════
+        // WEBSOCKET CONNECTION TO GEMINI
+        // ═══════════════════════════════════════════════════════════
+        function connectWebSocket(apiKey) {
+            log('Establishing uplink to Gemini...', 'sys');
+            debugDot.className = '';
+            
+            ws = new WebSocket(`${WS_URL}?key=${apiKey}`);
+            
+            ws.onopen = () => {
+                log('WebSocket connected. Sending configuration...', 'sys');
+                debugDot.className = 'connected';
+                
+                const voice = localStorage.getItem('jarvis_voice') || 'Charon';
+                
+                const setupMsg = {
+                    setup: {
+                        model: MODEL,
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: voice }
+                                }
+                            }
+                        },
+                        systemInstruction: {
+                            parts: [{
+                                text: "You are JARVIS, Tony Stark's AI assistant. Be concise, helpful, and address the user as 'Sir'. Keep responses brief (1-2 sentences) unless asked for detail."
+                            }]
+                        }
+                    }
+                };
+                
+                ws.send(JSON.stringify(setupMsg));
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleServerMessage(data);
+                } catch (e) {
+                    console.error('Parse error:', e);
+                }
+            };
+            
+            ws.onerror = (err) => {
+                log('WebSocket ERROR - Check API key.', 'err');
+                debugDot.className = 'error';
+                console.error('WS Error:', err);
+            };
+            
+            ws.onclose = () => {
+                log('Connection closed.', 'err');
+                debugDot.className = 'error';
+                setState('idle');
+            };
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // HANDLE SERVER RESPONSES
+        // ═══════════════════════════════════════════════════════════
+        function handleServerMessage(data) {
+            // Setup complete
+            if (data.setupComplete) {
+                log('JARVIS online. Speak now.', 'sys');
+                setState('idle');
+                statusText.textContent = 'LISTENING';
+                return;
+            }
+            
+            // Server content (audio/text)
+            if (data.serverContent) {
+                const sc = data.serverContent;
+                
+                // Handle audio output
+                if (sc.modelTurn && sc.modelTurn.parts) {
+                    for (const part of sc.modelTurn.parts) {
+                        if (part.inlineData && part.inlineData.data) {
+                            playAudioChunk(part.inlineData.data);
+                        }
+                        if (part.text) {
+                            log(`JARVIS: ${part.text}`, 'ai');
+                        }
+                    }
+                }
+                
+                // Handle transcription of JARVIS speech
+                if (sc.outputTranscription && sc.outputTranscription.text) {
+                    // Could display this if needed
+                }
+                
+                // Handle transcription of user speech
+                if (sc.inputTranscription && sc.inputTranscription.text) {
+                    log(`You: ${sc.inputTranscription.text}`, 'user');
+                }
+                
+                // Turn complete
+                if (sc.turnComplete) {
+                    setState('idle');
+                }
+            }
+            
+            // Tool calls (if any)
+            if (data.toolCall) {
+                setState('thinking');
+                log('Processing tool call...', 'sys');
+                // For web version, we just acknowledge
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        toolResponse: {
+                            functionResponses: [{
+                                id: data.toolCall.functionCalls[0]?.id || 'unknown',
+                                name: data.toolCall.functionCalls[0]?.name || 'unknown',
+                                response: { result: 'Web version - tool not available' }
+                            }]
+                        }
+                    }));
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // AUDIO PLAYBACK — THE CRITICAL FIX
+        // ═══════════════════════════════════════════════════════════
+        function playAudioChunk(base64Data) {
+            setState('speaking');
+            isPlaying = true;
+            
+            try {
+                // Decode base64 to binary
+                const binaryString = atob(base64Data);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                // Convert 16-bit PCM to Float32
+                const pcm16 = new Int16Array(bytes.buffer);
+                const float32 = new Float32Array(pcm16.length);
+                for (let i = 0; i < pcm16.length; i++) {
+                    float32[i] = pcm16[i] / 32768.0;
+                }
+                
+                // Create and play audio buffer
+                const audioBuffer = playContext.createBuffer(1, float32.length, 24000);
+                audioBuffer.getChannelData(0).set(float32);
+                
+                const source = playContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(playContext.destination);
+                
+                source.onended = () => {
+                    // Small delay before marking as not playing
+                    setTimeout(() => {
+                        isPlaying = false;
+                        setState('idle');
+                    }, 100);
+                };
+                
+                source.start(0);
+                
+            } catch (err) {
+                console.error('Playback error:', err);
+                isPlaying = false;
+                setState('idle');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // AUDIO CONVERSION UTILITIES
+        // ═══════════════════════════════════════════════════════════
+        function float32ToPcm16(float32Array) {
+            const pcm16 = new Int16Array(float32Array.length);
+            for (let i = 0; i < float32Array.length; i++) {
+                const s = Math.max(-1, Math.min(1, float32Array[i]));
+                pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+            return pcm16.buffer;
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            const chunkSize = 8192;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+                binary += String.fromCharCode.apply(null, chunk);
+            }
+            return btoa(binary);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // UI HELPERS
+        // ═══════════════════════════════════════════════════════════
+        function setState(state) {
+            reactor.className = 'arc-reactor ' + state;
+            const labels = {
+                'idle': 'LISTENING',
+                'listening': 'HEARING...',
+                'thinking': 'PROCESSING...',
+                'speaking': 'SPEAKING...'
+            };
+            statusText.textContent = labels[state] || 'ONLINE';
+        }
+
+        function log(text, type = 'sys') {
+            const div = document.createElement('div');
+            div.className = `log-${type}`;
+            div.textContent = `> ${text}`;
+            logPanel.appendChild(div);
+            logPanel.scrollTop = logPanel.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (logPanel.children.length > 50) {
+                logPanel.removeChild(logPanel.firstChild);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // SETTINGS
+        // ═══════════════════════════════════════════════════════════
         function openSettings() {
-            document.getElementById('settings-api-key').value = localStorage.getItem('gemini_api_key') || '';
-            document.getElementById('settings-voice').value = localStorage.getItem('jarvis_voice') || 'Charon';
+            document.getElementById('s-api-key').value = localStorage.getItem('jarvis_api_key') || '';
+            document.getElementById('s-voice').value = localStorage.getItem('jarvis_voice') || 'Charon';
             document.getElementById('settings-modal').classList.remove('hidden');
         }
 
@@ -185,106 +687,33 @@
         }
 
         function saveSettings() {
-            const newKey = document.getElementById('settings-api-key').value.trim();
-            const newVoice = document.getElementById('settings-voice').value;
+            const newKey = document.getElementById('s-api-key').value.trim();
+            const newVoice = document.getElementById('s-voice').value;
             
-            if (newKey) {
-                localStorage.setItem('gemini_api_key', newKey);
-                apiKey = newKey;
-            }
+            if (newKey) localStorage.setItem('jarvis_api_key', newKey);
             localStorage.setItem('jarvis_voice', newVoice);
-            selectedVoice = newVoice;
             
             closeSettings();
             
+            // Reconnect if connected
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.close();
-                setTimeout(connectWebSocket, 500);
+                setTimeout(() => {
+                    const key = localStorage.getItem('jarvis_api_key');
+                    if (key) connectWebSocket(key);
+                }, 500);
             }
-            log("System configuration updated. Re-establishing uplink...", "sys");
+            
+            log('Settings saved. Reconnecting...', 'sys');
         }
 
-        function log(text, type = 'sys') {
-            const div = document.createElement('div');
-            div.className = `log-entry log-${type}`;
-            div.innerHTML = `> ${text}`;
-            logPanel.appendChild(div);
-            logPanel.scrollTop = logPanel.scrollHeight;
-        }
-
-        function setState(state) {
-            reactor.className = 'arc-reactor ' + state;
-            statusText.innerText = state.toUpperCase();
-        }
-
-        async function initAudio() {
-            try {
-                micStream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000, echoCancellation: true } });
-                audioContext = new AudioContext({ sampleRate: 16000 });
-                const source = audioContext.createMediaStreamSource(micStream);
-                const processor = audioContext.createScriptProcessor(1024, 1, 1);
-                source.connect(processor); processor.connect(audioContext.destination);
-
-                processor.onaudioprocess = (e) => {
-                    if (ws && ws.readyState === WebSocket.OPEN) {
-                        const inputData = e.inputBuffer.getChannelData(0);
-                        const pcm = new Int16Array(inputData.length);
-                        for (let i = 0; i < inputData.length; i++) pcm[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-                        sendAudio(pcm.buffer);
-                    }
-                };
-                playContext = new AudioContext({ sampleRate: 24000 });
-                connectWebSocket();
-            } catch (err) { log("ERROR: Microphone access denied.", "sys"); }
-        }
-
-        function connectWebSocket() {
-            ws = new WebSocket(`${WS_URL}?key=${apiKey}`);
-            ws.onopen = () => {
-                const setupMessage = {
-                    setup: {
-                        model: MODEL,
-                        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: selectedVoice } } } },
-                        systemInstruction: { parts: [{ text: "You are JARVIS, Tony Stark's AI assistant. Be concise, direct, and highly intelligent. Address the user as 'Sir'." }] }
-                    }
-                };
-                ws.send(JSON.stringify(setupMessage));
-            };
-            ws.onmessage = async (event) => {
-                const data = JSON.parse(event.data);
-                if (data.setupComplete) log("JARVIS is online and listening.", "sys");
-                if (data.serverContent) {
-                    const turn = data.serverContent.modelTurn;
-                    if (turn && turn.parts) {
-                        for (const part of turn.parts) {
-                            if (part.inlineData) playAudio(part.inlineData.data);
-                        }
-                    }
-                    if (data.serverContent.turnComplete) setState("idle");
-                }
-            };
-            ws.onerror = () => log("UPLINK ERROR: Check API Key.", "sys");
-        }
-
-        function sendAudio(pcmBuffer) {
-            const base64 = btoa(String.fromCharCode(...new Uint8Array(pcmBuffer)));
-            ws.send(JSON.stringify({ realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm;rate=16000", data: base64 }] } }));
-            setState("listening");
-        }
-
-        function playAudio(base64Audio) {
-            setState("speaking");
-            const binary = atob(base64Audio);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            const pcm16 = new Int16Array(bytes.buffer);
-            const float32 = new Float32Array(pcm16.length);
-            for (let i = 0; i < pcm16.length; i++) float32[i] = pcm16[i] / 0x8000;
-            const audioBuffer = playContext.createBuffer(1, float32.length, 24000);
-            audioBuffer.getChannelData(0).set(float32);
-            const source = playContext.createBufferSource();
-            source.buffer = audioBuffer; source.connect(playContext.destination); source.start();
-        }
+        // Keyboard shortcut to interrupt
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                isPlaying = false;
+                setState('idle');
+            }
+        });
     </script>
 </body>
 </html>
