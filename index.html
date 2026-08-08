@@ -3,22 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J.A.R.V.I.S. v0.1</title>
+    <title>J.A.R.V.I.S. Zero-Install Core</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="hud">
-        <h1>J.A.R.V.I.S. <span class="version">v0.1</span></h1>
-        <div class="terminal" id="terminal">
-            <div class="log">[SYSTEM] Booting up...</div>
-            <div class="log">[SYSTEM] Awaiting voice input...</div>
+    <div class="mainframe">
+        <header>
+            <h1>J.A.R.V.I.S. <span class="sub">ZERO-INSTALL CORE</span></h1>
+            <div class="stats">
+                <span>Graph Nodes: <b id="node-count">0</b></span>
+                <span>Status: <b id="status" class="online">ONLINE</b></span>
+            </div>
+        </header>
+
+        <div class="sensors">
+            <div class="vision-module">
+                <video id="screen-feed" autoplay playsinline muted></video>
+                <div class="overlay" id="vision-status">VISION OFFLINE</div>
+                <button id="screen-btn" class="vision-btn">Share Screen</button>
+            </div>
+            
+            <div class="audio-module">
+                <button id="mic-btn">🎤 Activate Audio</button>
+                <div class="waveform"></div>
+            </div>
         </div>
-        <button id="mic-btn">🎤 Activate Mic</button>
+
+        <div class="console" id="terminal"></div>
+        
         <div class="input-row">
-            <input type="text" id="text-input" placeholder="Type a command..." />
-            <button id="send-btn">Send</button>
+            <input type="text" id="cmd-input" placeholder="Enter command..." autocomplete="off" />
         </div>
     </div>
+    <script src="jarvis_brain.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
