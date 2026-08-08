@@ -146,7 +146,7 @@
     // ═══════════════════════════════════════════════════════════════
 
     const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
-    const MODEL = "models/gemini-2.5-flash-native-audio-preview-12-2025"; // Exact match from your Python code
+    const MODEL = localStorage.getItem('jarvis_model') || "models/gemini-2.5-flash-native-audio-preview-12-2025";
 
     let ws = null;
     let micCtx = null, playCtx = null;
