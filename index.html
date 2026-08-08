@@ -14,177 +14,135 @@
         }
 
         body {
-            margin: 0;
-            background-color: var(--stark-dark);
-            background-image: 
-                linear-gradient(var(--stark-grid) 1px, transparent 1px),
-                linear-gradient(90deg, var(--stark-grid) 1px, transparent 1px);
-            background-size: 40px 40px;
-            color: var(--stark-cyan);
-            font-family: 'Orbitron', sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            margin: 0; background-color: var(--stark-dark);
+            background-image: linear-gradient(var(--stark-grid) 1px, transparent 1px), linear-gradient(90deg, var(--stark-grid) 1px, transparent 1px);
+            background-size: 40px 40px; color: var(--stark-cyan); font-family: 'Orbitron', sans-serif;
+            overflow: hidden; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* Boot Sequence Modal */
         #boot-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            border: 2px solid var(--stark-cyan);
-            box-shadow: 0 0 50px var(--stark-cyan) inset;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1000; border: 2px solid var(--stark-cyan); box-shadow: 0 0 50px var(--stark-cyan) inset;
         }
         #boot-modal.hidden { display: none; }
         #boot-modal h1 { font-size: 2rem; margin-bottom: 10px; text-shadow: 0 0 10px var(--stark-cyan); }
         #boot-modal p { font-family: 'Share Tech Mono', monospace; color: #888; margin-bottom: 20px; max-width: 400px; text-align: center; }
         #api-key-input {
-            background: transparent;
-            border: 1px solid var(--stark-cyan);
-            color: var(--stark-cyan);
-            padding: 15px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
-            width: 300px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 20px;
+            background: transparent; border: 1px solid var(--stark-cyan); color: var(--stark-cyan); padding: 15px;
+            font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; width: 300px; text-align: center; outline: none; margin-bottom: 20px;
         }
         #boot-btn {
-            background: var(--stark-cyan);
-            color: black;
-            border: none;
-            padding: 15px 40px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            font-size: 1.2rem;
-            cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: 0.3s;
+            background: var(--stark-cyan); color: black; border: none; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
+            font-weight: bold; font-size: 1.2rem; cursor: pointer; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); transition: 0.3s;
         }
         #boot-btn:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
 
-        /* Main HUD */
-        .hud-top {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.8rem;
-            letter-spacing: 5px;
-            opacity: 0.7;
+        /* Settings Gear */
+        #settings-btn {
+            position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--stark-cyan);
+            color: var(--stark-cyan); width: 45px; height: 45px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 100;
         }
+        #settings-btn:hover { background: var(--stark-cyan); color: black; box-shadow: 0 0 15px var(--stark-cyan); transform: rotate(90deg); }
 
-        .arc-reactor-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Settings Modal */
+        #settings-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center;
+            z-index: 2000; backdrop-filter: blur(10px);
         }
+        #settings-modal.hidden { display: none; }
+        .settings-panel {
+            background: rgba(5, 15, 25, 0.95); border: 1px solid var(--stark-cyan); padding: 40px; width: 400px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3) inset, 0 0 20px var(--stark-cyan);
+            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
+        }
+        .settings-panel h2 { margin-top: 0; border-bottom: 1px solid var(--stark-cyan); padding-bottom: 10px; letter-spacing: 3px; font-size: 1.2rem; }
+        .settings-group { margin-bottom: 25px; }
+        .settings-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 2px; }
+        .settings-group input, .settings-group select {
+            width: 100%; background: rgba(0, 243, 255, 0.05); border: 1px solid rgba(0, 243, 255, 0.3); color: var(--stark-cyan);
+            padding: 12px; font-family: 'Share Tech Mono', monospace; font-size: 1rem; outline: none; box-sizing: border-box;
+        }
+        .settings-group select option { background: #050505; color: var(--stark-cyan); }
+        .settings-actions { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-stark { flex: 1; padding: 12px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; font-size: 0.9rem; }
+        .btn-save { background: var(--stark-cyan); color: black; }
+        .btn-save:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
+        .btn-cancel { background: transparent; border: 1px solid #ff3333; color: #ff3333; }
+        .btn-cancel:hover { background: #ff3333; color: white; }
 
+        .hud-top { position: absolute; top: 20px; left: 0; width: 100%; text-align: center; font-size: 0.8rem; letter-spacing: 5px; opacity: 0.7; }
+        .arc-reactor-container { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; }
         .arc-reactor {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%);
-            box-shadow: 0 0 50px var(--stark-cyan), 0 0 100px var(--stark-blue);
-            animation: pulse 4s infinite ease-in-out;
-            transition: all 0.3s ease;
+            width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%);
+            box-shadow: 0 0 50px var(--stark-cyan), 0 0 100px var(--stark-blue); animation: pulse 4s infinite ease-in-out; transition: all 0.3s ease;
         }
-
-        .ring {
-            position: absolute;
-            border: 2px solid var(--stark-cyan);
-            border-radius: 50%;
-            opacity: 0.3;
-        }
+        .ring { position: absolute; border: 2px solid var(--stark-cyan); border-radius: 50%; opacity: 0.3; }
         .ring-1 { width: 200px; height: 200px; animation: spin 10s linear infinite; border-style: dashed; }
         .ring-2 { width: 260px; height: 260px; animation: spin-reverse 15s linear infinite; border-width: 1px; }
 
-        /* Status States */
-        .arc-reactor.listening {
-            background: radial-gradient(circle, #fff 0%, #00ff00 40%, transparent 70%);
-            box-shadow: 0 0 50px #00ff00, 0 0 100px #0055ff;
-            animation: pulse-fast 0.5s infinite alternate;
-        }
-        .arc-reactor.thinking {
-            background: radial-gradient(circle, #fff 0%, #ffaa00 40%, transparent 70%);
-            box-shadow: 0 0 50px #ffaa00, 0 0 100px #ff0000;
-            animation: pulse-fast 0.2s infinite alternate;
-        }
-        .arc-reactor.speaking {
-            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%);
-            box-shadow: 0 0 80px var(--stark-cyan), 0 0 150px var(--stark-blue);
-            transform: scale(1.2);
-        }
+        .arc-reactor.listening { background: radial-gradient(circle, #fff 0%, #00ff00 40%, transparent 70%); box-shadow: 0 0 50px #00ff00; animation: pulse-fast 0.5s infinite alternate; }
+        .arc-reactor.thinking { background: radial-gradient(circle, #fff 0%, #ffaa00 40%, transparent 70%); box-shadow: 0 0 50px #ffaa00; animation: pulse-fast 0.2s infinite alternate; }
+        .arc-reactor.speaking { background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 40%, transparent 70%); box-shadow: 0 0 80px var(--stark-cyan); transform: scale(1.2); }
 
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.05); opacity: 1; } }
         @keyframes pulse-fast { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
 
-        /* Log Panel */
         #log-panel {
-            position: absolute;
-            bottom: 20px;
-            width: 80%;
-            max-width: 800px;
-            height: 200px;
-            background: rgba(0, 20, 40, 0.6);
-            border: 1px solid var(--stark-cyan);
-            border-radius: 10px;
-            padding: 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem;
-            overflow-y: auto;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2) inset;
+            position: absolute; bottom: 20px; width: 80%; max-width: 800px; height: 200px; background: rgba(0, 20, 40, 0.6);
+            border: 1px solid var(--stark-cyan); border-radius: 10px; padding: 20px; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem; overflow-y: auto; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2) inset;
         }
         .log-entry { margin-bottom: 8px; line-height: 1.4; }
         .log-user { color: #fff; }
         .log-ai { color: var(--stark-cyan); text-shadow: 0 0 5px var(--stark-cyan); }
         .log-sys { color: #ffaa00; font-style: italic; }
-
-        #status-text {
-            position: absolute;
-            bottom: 240px;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+        #status-text { position: absolute; bottom: 240px; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <!-- Boot Sequence -->
     <div id="boot-modal">
         <h1>J.A.R.V.I.S. INITIALIZATION</h1>
-        <p>Enter your Gemini API Key to establish secure uplink. (Stored locally in your browser, never transmitted to third parties).</p>
+        <p>Enter your Gemini API Key to establish secure uplink.</p>
         <input type="password" id="api-key-input" placeholder="API KEY">
         <button id="boot-btn" onclick="bootJarvis()">ESTABLISH UPLINK</button>
     </div>
 
-    <!-- Main HUD -->
-    <div class="hud-top">STARK INDUSTRIES // MARK L WEB PROTOCOL // SECURE UPLINK</div>
-    
+    <button id="settings-btn" onclick="openSettings()">⚙️</button>
+
+    <div id="settings-modal" class="hidden">
+        <div class="settings-panel">
+            <h2>SYSTEM CONFIGURATION</h2>
+            <div class="settings-group">
+                <label>Gemini API Key</label>
+                <input type="password" id="settings-api-key" placeholder="Enter API Key">
+            </div>
+            <div class="settings-group">
+                <label>Voice Core Selection</label>
+                <select id="settings-voice">
+                    <option value="Charon">Charon (Deep / Formal)</option>
+                    <option value="Aoede">Aoede (Warm / Conversational)</option>
+                    <option value="Puck">Puck (Bright / Energetic)</option>
+                    <option value="Kore">Kore (Firm / Authoritative)</option>
+                    <option value="Fenrir">Fenrir (Gruff / Tactical)</option>
+                </select>
+            </div>
+            <div class="settings-actions">
+                <button class="btn-stark btn-save" onclick="saveSettings()">COMPILE & SAVE</button>
+                <button class="btn-stark btn-cancel" onclick="closeSettings()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hud-top">STARK INDUSTRIES // MARK L WEB PROTOCOL</div>
     <div class="arc-reactor-container">
         <div class="ring ring-1"></div>
         <div class="ring ring-2"></div>
         <div id="arc-reactor" class="arc-reactor"></div>
     </div>
-
     <div id="status-text">SYSTEM IDLE</div>
-
     <div id="log-panel">
         <div class="log-entry log-sys">> AWAITING INITIALIZATION...</div>
     </div>
@@ -193,11 +151,9 @@
         const MODEL = "models/gemini-2.0-flash-live-001";
         const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
         
-        let ws;
-        let audioContext;
-        let playContext;
-        let micStream;
+        let ws, audioContext, playContext, micStream;
         let apiKey = localStorage.getItem('gemini_api_key');
+        let selectedVoice = localStorage.getItem('jarvis_voice') || 'Charon';
 
         const reactor = document.getElementById('arc-reactor');
         const statusText = document.getElementById('status-text');
@@ -218,6 +174,36 @@
             initAudio();
         }
 
+        function openSettings() {
+            document.getElementById('settings-api-key').value = localStorage.getItem('gemini_api_key') || '';
+            document.getElementById('settings-voice').value = localStorage.getItem('jarvis_voice') || 'Charon';
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            const newKey = document.getElementById('settings-api-key').value.trim();
+            const newVoice = document.getElementById('settings-voice').value;
+            
+            if (newKey) {
+                localStorage.setItem('gemini_api_key', newKey);
+                apiKey = newKey;
+            }
+            localStorage.setItem('jarvis_voice', newVoice);
+            selectedVoice = newVoice;
+            
+            closeSettings();
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+                setTimeout(connectWebSocket, 500);
+            }
+            log("System configuration updated. Re-establishing uplink...", "sys");
+        }
+
         function log(text, type = 'sys') {
             const div = document.createElement('div');
             div.className = `log-entry log-${type}`;
@@ -233,109 +219,56 @@
 
         async function initAudio() {
             try {
-                log("Requesting microphone access...", "sys");
                 micStream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 16000, echoCancellation: true } });
-                
-                // Input Audio Context (16kHz for Gemini)
                 audioContext = new AudioContext({ sampleRate: 16000 });
                 const source = audioContext.createMediaStreamSource(micStream);
                 const processor = audioContext.createScriptProcessor(1024, 1, 1);
-                
-                source.connect(processor);
-                processor.connect(audioContext.destination);
+                source.connect(processor); processor.connect(audioContext.destination);
 
                 processor.onaudioprocess = (e) => {
                     if (ws && ws.readyState === WebSocket.OPEN) {
                         const inputData = e.inputBuffer.getChannelData(0);
                         const pcm = new Int16Array(inputData.length);
-                        for (let i = 0; i < inputData.length; i++) {
-                            pcm[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-                        }
+                        for (let i = 0; i < inputData.length; i++) pcm[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
                         sendAudio(pcm.buffer);
                     }
                 };
-
-                // Output Audio Context (24kHz for Gemini)
                 playContext = new AudioContext({ sampleRate: 24000 });
-                
                 connectWebSocket();
-                log("Audio systems online. Uplink established.", "sys");
-                setState("idle");
-
-            } catch (err) {
-                log("ERROR: Microphone access denied. JARVIS cannot hear you.", "sys");
-                console.error(err);
-            }
+            } catch (err) { log("ERROR: Microphone access denied.", "sys"); }
         }
 
         function connectWebSocket() {
             ws = new WebSocket(`${WS_URL}?key=${apiKey}`);
-
             ws.onopen = () => {
-                log("WebSocket connected. Sending setup configuration...", "sys");
                 const setupMessage = {
                     setup: {
                         model: MODEL,
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: "Aoede" } // Charon, Aoede, Puck, etc.
-                                }
-                            }
-                        },
-                        systemInstruction: {
-                            parts: [{ text: "You are JARVIS, Tony Stark's AI assistant. Be concise, direct, and highly intelligent. Address the user as 'Sir'." }]
-                        }
+                        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: selectedVoice } } } },
+                        systemInstruction: { parts: [{ text: "You are JARVIS, Tony Stark's AI assistant. Be concise, direct, and highly intelligent. Address the user as 'Sir'." }] }
                     }
                 };
                 ws.send(JSON.stringify(setupMessage));
             };
-
             ws.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
-                
-                if (data.setupComplete) {
-                    log("Setup complete. JARVIS is online and listening.", "sys");
-                }
-
+                if (data.setupComplete) log("JARVIS is online and listening.", "sys");
                 if (data.serverContent) {
                     const turn = data.serverContent.modelTurn;
                     if (turn && turn.parts) {
                         for (const part of turn.parts) {
-                            if (part.inlineData) {
-                                // Play Audio
-                                playAudio(part.inlineData.data);
-                            } else if (part.text) {
-                                // Text fallback (if audio transcription is enabled)
-                                log(`JARVIS: ${part.text}`, "ai");
-                            }
+                            if (part.inlineData) playAudio(part.inlineData.data);
                         }
                     }
-                    
-                    if (data.serverContent.turnComplete) {
-                        setState("idle");
-                    }
+                    if (data.serverContent.turnComplete) setState("idle");
                 }
             };
-
-            ws.onerror = (err) => {
-                log("UPLINK ERROR: Check API Key or network connection.", "sys");
-                console.error(err);
-            };
+            ws.onerror = () => log("UPLINK ERROR: Check API Key.", "sys");
         }
 
         function sendAudio(pcmBuffer) {
             const base64 = btoa(String.fromCharCode(...new Uint8Array(pcmBuffer)));
-            const message = {
-                realtimeInput: {
-                    mediaChunks: [{
-                        mimeType: "audio/pcm;rate=16000",
-                        data: base64
-                    }]
-                }
-            };
-            ws.send(JSON.stringify(message));
+            ws.send(JSON.stringify({ realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm;rate=16000", data: base64 }] } }));
             setState("listening");
         }
 
@@ -343,24 +276,14 @@
             setState("speaking");
             const binary = atob(base64Audio);
             const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            
-            // Convert 16-bit PCM to Float32 for Web Audio API
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
             const pcm16 = new Int16Array(bytes.buffer);
             const float32 = new Float32Array(pcm16.length);
-            for (let i = 0; i < pcm16.length; i++) {
-                float32[i] = pcm16[i] / 0x8000;
-            }
-
+            for (let i = 0; i < pcm16.length; i++) float32[i] = pcm16[i] / 0x8000;
             const audioBuffer = playContext.createBuffer(1, float32.length, 24000);
             audioBuffer.getChannelData(0).set(float32);
-
             const source = playContext.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(playContext.destination);
-            source.start();
+            source.buffer = audioBuffer; source.connect(playContext.destination); source.start();
         }
     </script>
 </body>
