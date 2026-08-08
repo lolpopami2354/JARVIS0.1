@@ -7,713 +7,457 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --stark-cyan: #00f3ff;
-            --stark-blue: #0055ff;
-            --stark-dark: #050505;
-            --stark-grid: rgba(0, 243, 255, 0.05);
+            --cyan: #00f3ff;
+            --blue: #0055ff;
+            --dark: #050505;
+            --grid: rgba(0, 243, 255, 0.05);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            background-color: var(--stark-dark);
-            background-image: 
-                linear-gradient(var(--stark-grid) 1px, transparent 1px),
-                linear-gradient(90deg, var(--stark-grid) 1px, transparent 1px);
+            background: var(--dark);
+            background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--grid) 1px, transparent 1px);
             background-size: 40px 40px;
-            color: var(--stark-cyan);
+            color: var(--cyan);
             font-family: 'Orbitron', sans-serif;
-            overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
-        /* Boot Screen */
-        #boot-screen {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.98);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Boot */
+        #boot {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.98);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 9999;
-            cursor: pointer;
         }
-        #boot-screen.hidden { display: none; }
-        #boot-screen h1 {
-            font-size: 2.5rem;
-            text-shadow: 0 0 20px var(--stark-cyan);
-            margin-bottom: 20px;
-            letter-spacing: 5px;
-        }
-        #boot-screen p {
-            font-family: 'Share Tech Mono', monospace;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-        .boot-input {
-            background: transparent;
-            border: 1px solid var(--stark-cyan);
-            color: var(--stark-cyan);
-            padding: 15px 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.1rem;
-            width: 350px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 20px;
-        }
-        .boot-btn {
-            background: var(--stark-cyan);
-            color: #000;
-            border: none;
-            padding: 15px 50px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: all 0.3s;
-            letter-spacing: 2px;
-        }
-        .boot-btn:hover {
-            background: #fff;
-            box-shadow: 0 0 30px var(--stark-cyan);
-            transform: scale(1.05);
-        }
+        #boot.hidden { display: none; }
+        #boot h1 { font-size: 2.5rem; text-shadow: 0 0 20px var(--cyan); margin-bottom: 15px; letter-spacing: 5px; }
+        #boot p { font-family: 'Share Tech Mono', monospace; color: #666; margin-bottom: 25px; font-size: 0.85rem; }
+        .input { background: transparent; border: 1px solid var(--cyan); color: var(--cyan); padding: 14px 20px; font-family: 'Share Tech Mono', monospace; font-size: 1rem; width: 380px; text-align: center; outline: none; margin-bottom: 15px; }
+        .btn { background: var(--cyan); color: #000; border: none; padding: 14px 50px; font-family: 'Orbitron'; font-weight: bold; font-size: 1rem; cursor: pointer; clip-path: polygon(10% 0,100% 0,90% 100%,0 100%); transition: 0.3s; letter-spacing: 2px; }
+        .btn:hover { background: #fff; box-shadow: 0 0 30px var(--cyan); }
 
-        /* Main HUD */
-        .hud-top {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.75rem;
-            letter-spacing: 4px;
-            opacity: 0.6;
-        }
-
-        .arc-container {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .arc-reactor {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 30%, transparent 70%);
-            box-shadow: 0 0 60px var(--stark-cyan), 0 0 120px var(--stark-blue);
-            transition: all 0.3s ease;
-        }
-
-        .ring {
-            position: absolute;
-            border: 2px solid var(--stark-cyan);
-            border-radius: 50%;
-            opacity: 0.25;
-        }
-        .ring-1 { width: 220px; height: 220px; animation: spin 8s linear infinite; border-style: dashed; }
-        .ring-2 { width: 280px; height: 280px; animation: spin-rev 12s linear infinite; border-width: 1px; }
-        .ring-3 { width: 320px; height: 320px; animation: spin 20s linear infinite; border-style: dotted; opacity: 0.15; }
-
-        /* States */
-        .arc-reactor.listening {
-            background: radial-gradient(circle, #fff 0%, #00ff88 30%, transparent 70%);
-            box-shadow: 0 0 60px #00ff88, 0 0 120px #00aa55;
-            animation: pulse 1s infinite alternate;
-        }
-        .arc-reactor.thinking {
-            background: radial-gradient(circle, #fff 0%, #ffaa00 30%, transparent 70%);
-            box-shadow: 0 0 60px #ffaa00, 0 0 120px #ff6600;
-            animation: pulse 0.3s infinite alternate;
-        }
-        .arc-reactor.speaking {
-            background: radial-gradient(circle, #fff 0%, var(--stark-cyan) 30%, transparent 70%);
-            box-shadow: 0 0 100px var(--stark-cyan), 0 0 200px var(--stark-blue);
-            transform: scale(1.15);
-            animation: speak-pulse 0.5s infinite alternate;
-        }
-
-        @keyframes pulse { from { transform: scale(0.95); } to { transform: scale(1.05); } }
-        @keyframes speak-pulse { from { transform: scale(1.1); } to { transform: scale(1.25); } }
+        /* HUD */
+        .hud-top { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 0.7rem; letter-spacing: 4px; opacity: 0.6; }
+        .arc-wrap { position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; }
+        .arc { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--cyan) 30%, transparent 70%); box-shadow: 0 0 60px var(--cyan), 0 0 120px var(--blue); transition: all 0.3s; }
+        .ring { position: absolute; border: 2px solid var(--cyan); border-radius: 50%; opacity: 0.25; }
+        .r1 { width: 210px; height: 210px; animation: spin 8s linear infinite; border-style: dashed; }
+        .r2 { width: 270px; height: 270px; animation: spinr 12s linear infinite; }
+        .arc.listening { background: radial-gradient(circle, #fff 0%, #00ff88 30%, transparent 70%); box-shadow: 0 0 60px #00ff88; }
+        .arc.speaking { background: radial-gradient(circle, #fff 0%, var(--cyan) 30%, transparent 70%); box-shadow: 0 0 100px var(--cyan); transform: scale(1.15); }
+        .arc.thinking { background: radial-gradient(circle, #fff 0%, #ffaa00 30%, transparent 70%); box-shadow: 0 0 60px #ffaa00; animation: pulse 0.3s infinite alternate; }
+        .arc.error { background: radial-gradient(circle, #fff 0%, #ff3333 30%, transparent 70%); box-shadow: 0 0 60px #ff3333; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes spin-rev { to { transform: rotate(-360deg); } }
+        @keyframes spinr { to { transform: rotate(-360deg); } }
+        @keyframes pulse { from { transform: scale(0.95); } to { transform: scale(1.05); } }
 
-        #status-text {
-            position: absolute;
-            bottom: 260px;
-            font-size: 1.1rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
+        #status { position: absolute; bottom: 250px; font-size: 1rem; letter-spacing: 3px; text-transform: uppercase; }
 
-        /* Log Panel */
-        #log-panel {
-            position: absolute;
-            bottom: 20px;
-            width: 85%;
-            max-width: 900px;
-            height: 180px;
-            background: rgba(0, 15, 30, 0.7);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 8px;
-            padding: 15px 20px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.85rem;
-            overflow-y: auto;
-            line-height: 1.6;
+        /* Log */
+        #log {
+            position: absolute; bottom: 15px; width: 85%; max-width: 900px; height: 200px;
+            background: rgba(0,15,30,0.8); border: 1px solid rgba(0,243,255,0.3); border-radius: 8px;
+            padding: 15px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+            overflow-y: auto; line-height: 1.5;
         }
-        .log-user { color: #fff; }
-        .log-ai { color: var(--stark-cyan); text-shadow: 0 0 5px var(--stark-cyan); }
-        .log-sys { color: #ffaa00; font-style: italic; }
-        .log-err { color: #ff4444; font-weight: bold; }
+        .l-sys { color: #ffaa00; }
+        .l-err { color: #ff4444; font-weight: bold; }
+        .l-ok { color: #00ff88; }
+        .l-user { color: #fff; }
+        .l-ai { color: var(--cyan); }
+
+        /* Debug */
+        #debug-dot { position: absolute; top: 25px; left: 25px; width: 12px; height: 12px; border-radius: 50%; background: #ff4444; transition: 0.3s; }
+        #debug-dot.on { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        #debug-dot.warn { background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
 
         /* Settings */
-        #settings-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: transparent;
-            border: 1px solid var(--stark-cyan);
-            color: var(--stark-cyan);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-        #settings-btn:hover {
-            background: var(--stark-cyan);
-            color: #000;
-            box-shadow: 0 0 20px var(--stark-cyan);
-            transform: rotate(90deg);
-        }
-
-        #settings-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5000;
-            backdrop-filter: blur(10px);
-        }
+        #settings-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--cyan); color: var(--cyan); width: 42px; height: 42px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; transition: 0.3s; z-index: 100; }
+        #settings-btn:hover { background: var(--cyan); color: #000; transform: rotate(90deg); }
+        #settings-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 5000; backdrop-filter: blur(8px); }
         #settings-modal.hidden { display: none; }
-        .settings-panel {
-            background: rgba(5, 15, 30, 0.98);
-            border: 1px solid var(--stark-cyan);
-            padding: 40px;
-            width: 420px;
-            box-shadow: 0 0 50px rgba(0, 243, 255, 0.2) inset;
-            clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
-        }
-        .settings-panel h2 {
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--stark-cyan);
-            padding-bottom: 12px;
-            letter-spacing: 3px;
-            font-size: 1.1rem;
-        }
-        .s-group { margin-bottom: 22px; }
-        .s-group label {
-            display: block;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem;
-            color: #888;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .s-group input, .s-group select {
-            width: 100%;
-            background: rgba(0, 243, 255, 0.05);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            color: var(--stark-cyan);
-            padding: 12px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1rem;
-            outline: none;
-        }
+        .s-panel { background: rgba(5,15,30,0.98); border: 1px solid var(--cyan); padding: 35px; width: 420px; }
+        .s-panel h2 { margin-bottom: 20px; border-bottom: 1px solid var(--cyan); padding-bottom: 10px; font-size: 1rem; letter-spacing: 3px; }
+        .s-group { margin-bottom: 18px; }
+        .s-group label { display: block; font-family: 'Share Tech Mono'; font-size: 0.7rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 2px; }
+        .s-group input, .s-group select { width: 100%; background: rgba(0,243,255,0.05); border: 1px solid rgba(0,243,255,0.3); color: var(--cyan); padding: 10px; font-family: 'Share Tech Mono'; font-size: 0.9rem; outline: none; }
         .s-group select option { background: #050505; }
-        .s-actions { display: flex; gap: 15px; margin-top: 30px; }
-        .btn { flex: 1; padding: 14px; font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; transition: 0.3s; }
-        .btn-save { background: var(--stark-cyan); color: #000; }
-        .btn-save:hover { background: #fff; box-shadow: 0 0 20px var(--stark-cyan); }
-        .btn-cancel { background: transparent; border: 1px solid #ff4444; color: #ff4444; }
-        .btn-cancel:hover { background: #ff4444; color: #fff; }
-
-        /* Debug indicator */
-        #debug-dot {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff4444;
-            transition: background 0.3s;
-        }
-        #debug-dot.connected { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
-        #debug-dot.error { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
+        .s-actions { display: flex; gap: 12px; margin-top: 25px; }
+        .s-btn { flex: 1; padding: 12px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; font-size: 0.8rem; }
+        .s-save { background: var(--cyan); color: #000; }
+        .s-cancel { background: transparent; border: 1px solid #ff4444; color: #ff4444; }
     </style>
 </head>
 <body>
 
-    <!-- BOOT SCREEN - USER MUST CLICK THIS -->
-    <div id="boot-screen">
-        <h1>J.A.R.V.I.S.</h1>
-        <p>ENTER API KEY AND CLICK TO INITIALIZE AUDIO SYSTEMS</p>
-        <input type="password" class="boot-input" id="api-key-input" placeholder="GEMINI API KEY">
-        <button class="boot-btn" id="boot-btn">⚡ INITIALIZE</button>
-    </div>
+<!-- BOOT -->
+<div id="boot">
+    <h1>J.A.R.V.I.S.</h1>
+    <p>ENTER API KEY → CLICK INITIALIZE → ALLOW MICROPHONE</p>
+    <input type="password" class="input" id="api-input" placeholder="GEMINI API KEY">
+    <button class="btn" id="boot-btn">⚡ INITIALIZE</button>
+</div>
 
-    <!-- MAIN HUD -->
-    <div id="debug-dot"></div>
-    <div class="hud-top">STARK INDUSTRIES // JARVIS ONLINE</div>
-    
-    <button id="settings-btn" onclick="openSettings()">⚙️</button>
+<!-- HUD -->
+<div id="debug-dot"></div>
+<div class="hud-top">STARK INDUSTRIES // JARVIS WEB PROTOCOL</div>
+<button id="settings-btn" onclick="openSettings()">⚙️</button>
 
-    <div class="arc-container">
-        <div class="ring ring-1"></div>
-        <div class="ring ring-2"></div>
-        <div class="ring ring-3"></div>
-        <div id="arc-reactor" class="arc-reactor"></div>
-    </div>
+<div class="arc-wrap">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div id="arc" class="arc"></div>
+</div>
+<div id="status">OFFLINE</div>
+<div id="log"></div>
 
-    <div id="status-text">OFFLINE</div>
-
-    <div id="log-panel">
-        <div class="log-sys">> Awaiting initialization...</div>
-    </div>
-
-    <!-- SETTINGS MODAL -->
-    <div id="settings-modal" class="hidden">
-        <div class="settings-panel">
-            <h2>SYSTEM CONFIG</h2>
-            <div class="s-group">
-                <label>API Key</label>
-                <input type="password" id="s-api-key">
-            </div>
-            <div class="s-group">
-                <label>Voice</label>
-                <select id="s-voice">
-                    <option value="Charon">Charon (Deep)</option>
-                    <option value="Aoede">Aoede (Warm)</option>
-                    <option value="Puck">Puck (Bright)</option>
-                    <option value="Kore">Kore (Firm)</option>
-                    <option value="Fenrir">Fenrir (Gruff)</option>
-                </select>
-            </div>
-            <div class="s-actions">
-                <button class="btn btn-save" onclick="saveSettings()">SAVE</button>
-                <button class="btn btn-cancel" onclick="closeSettings()">CANCEL</button>
-            </div>
+<!-- SETTINGS -->
+<div id="settings-modal" class="hidden">
+    <div class="s-panel">
+        <h2>CONFIG</h2>
+        <div class="s-group"><label>API Key</label><input type="password" id="s-key"></div>
+        <div class="s-group"><label>Voice</label>
+            <select id="s-voice">
+                <option value="Charon">Charon (Deep)</option>
+                <option value="Aoede">Aoede (Warm)</option>
+                <option value="Puck">Puck (Bright)</option>
+                <option value="Kore">Kore (Firm)</option>
+                <option value="Fenrir">Fenrir (Gruff)</option>
+            </select>
+        </div>
+        <div class="s-group"><label>Model</label>
+            <select id="s-model">
+                <option value="models/gemini-2.0-flash-live-001">gemini-2.0-flash-live-001</option>
+                <option value="models/gemini-2.5-flash-preview-native-audio-dialog">gemini-2.5-flash-preview-native-audio-dialog</option>
+            </select>
+        </div>
+        <div class="s-actions">
+            <button class="s-btn s-save" onclick="saveSettings()">SAVE</button>
+            <button class="s-btn s-cancel" onclick="closeSettings()">CANCEL</button>
         </div>
     </div>
+</div>
 
-    <script>
-        // ═══════════════════════════════════════════════════════════
-        // J.A.R.V.I.S. CORE — FIXED AUDIO PIPELINE
-        // ═══════════════════════════════════════════════════════════
+<script>
+// ═══════════════════════════════════════════════════════════════
+// J.A.R.V.I.S. WEB CORE — DIAGNOSTIC BUILD
+// ═══════════════════════════════════════════════════════════════
 
-        const MODEL = "models/gemini-2.0-flash-live-001";
-        const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
+const WS_BASE = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
 
-        let ws = null;
-        let micContext = null;
-        let playContext = null;
-        let micStream = null;
-        let isPlaying = false;
-        let audioQueue = [];
-        let playTimeout = null;
+let ws = null;
+let micCtx = null;
+let playCtx = null;
+let micStream = null;
+let isPlaying = false;
+let currentModel = localStorage.getItem('jarvis_model') || 'models/gemini-2.0-flash-live-001';
 
-        // DOM Elements
-        const reactor = document.getElementById('arc-reactor');
-        const statusText = document.getElementById('status-text');
-        const logPanel = document.getElementById('log-panel');
-        const debugDot = document.getElementById('debug-dot');
-        const bootScreen = document.getElementById('boot-screen');
+const arc = document.getElementById('arc');
+const status = document.getElementById('status');
+const logEl = document.getElementById('log');
+const dot = document.getElementById('debug-dot');
 
-        // ═══════════════════════════════════════════════════════════
-        // BOOT SEQUENCE — CRITICAL: User must click to enable audio
-        // ═══════════════════════════════════════════════════════════
-        document.getElementById('boot-btn').addEventListener('click', async () => {
-            const apiKey = document.getElementById('api-key-input').value.trim();
-            if (!apiKey) {
-                log('ERROR: API Key required.', 'err');
-                return;
-            }
-            
-            localStorage.setItem('jarvis_api_key', apiKey);
-            bootScreen.classList.add('hidden');
-            
-            log('Initializing audio systems...', 'sys');
-            await initAudio(apiKey);
+// ── Logging ──
+function log(msg, type = 'sys') {
+    const d = document.createElement('div');
+    d.className = `l-${type}`;
+    d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    logEl.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log(`[JARVIS:${type}]`, msg);
+}
+
+function setState(s) {
+    arc.className = 'arc ' + s;
+    const map = { idle: 'LISTENING', listening: 'HEARING...', thinking: 'PROCESSING...', speaking: 'SPEAKING...', error: 'ERROR' };
+    status.textContent = map[s] || 'ONLINE';
+}
+
+// ── Boot ──
+document.getElementById('boot-btn').addEventListener('click', async () => {
+    const key = document.getElementById('api-input').value.trim();
+    if (!key) { log('ERROR: No API key entered.', 'err'); return; }
+    
+    localStorage.setItem('jarvis_key', key);
+    document.getElementById('boot').classList.add('hidden');
+    
+    log('Step 1: Creating AudioContexts...', 'sys');
+    try {
+        micCtx = new AudioContext({ sampleRate: 16000 });
+        playCtx = new AudioContext({ sampleRate: 24000 });
+        await micCtx.resume();
+        await playCtx.resume();
+        log(`Step 1 OK: mic=${micCtx.state}, play=${playCtx.state}`, 'ok');
+    } catch (e) {
+        log(`Step 1 FAILED: ${e.message}`, 'err');
+        setState('error');
+        return;
+    }
+
+    log('Step 2: Requesting microphone...', 'sys');
+    try {
+        micStream = await navigator.mediaDevices.getUserMedia({
+            audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true }
         });
+        log('Step 2 OK: Microphone access granted.', 'ok');
+    } catch (e) {
+        log(`Step 2 FAILED: ${e.message}`, 'err');
+        setState('error');
+        return;
+    }
 
-        // Auto-fill from localStorage
-        window.addEventListener('load', () => {
-            const savedKey = localStorage.getItem('jarvis_api_key');
-            if (savedKey) {
-                document.getElementById('api-key-input').value = savedKey;
-            }
-        });
+    log('Step 3: Connecting WebSocket...', 'sys');
+    connect(key);
+    startMic();
+});
 
-        // ═══════════════════════════════════════════════════════════
-        // AUDIO INITIALIZATION
-        // ═══════════════════════════════════════════════════════════
-        async function initAudio(apiKey) {
-            try {
-                // Create AudioContexts INSIDE the click handler (required by browsers)
-                micContext = new AudioContext({ sampleRate: 16000 });
-                playContext = new AudioContext({ sampleRate: 24000 });
-                
-                // Resume contexts (critical for autoplay policy)
-                await micContext.resume();
-                await playContext.resume();
-                
-                log('AudioContexts created and resumed.', 'sys');
-                log(`Mic: ${micContext.state} | Speaker: ${playContext.state}`, 'sys');
+// Auto-fill
+window.addEventListener('load', () => {
+    const k = localStorage.getItem('jarvis_key');
+    if (k) document.getElementById('api-input').value = k;
+});
 
-                // Get microphone
-                micStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        sampleRate: 16000,
-                        channelCount: 1,
-                        echoCancellation: true,
-                        noiseSuppression: true
-                    }
-                });
-                log('Microphone access granted.', 'sys');
+// ── WebSocket ──
+function connect(apiKey) {
+    const url = `${WS_BASE}?key=${apiKey}`;
+    log(`Connecting to: ${url.substring(0, 80)}...`, 'sys');
+    log(`Model: ${currentModel}`, 'sys');
+    
+    dot.className = '';
+    
+    try {
+        ws = new WebSocket(url);
+    } catch (e) {
+        log(`WebSocket creation failed: ${e.message}`, 'err');
+        setState('error');
+        return;
+    }
 
-                // Connect to Gemini
-                connectWebSocket(apiKey);
-
-                // Start mic capture
-                startMicCapture();
-
-            } catch (err) {
-                log(`CRITICAL ERROR: ${err.message}`, 'err');
-                console.error('Audio init failed:', err);
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // MICROPHONE CAPTURE
-        // ═══════════════════════════════════════════════════════════
-        function startMicCapture() {
-            const source = micContext.createMediaStreamSource(micStream);
-            const processor = micContext.createScriptProcessor(4096, 1, 1);
-            
-            processor.onaudioprocess = (e) => {
-                if (!ws || ws.readyState !== WebSocket.OPEN) return;
-                if (isPlaying) return; // Don't send mic while JARVIS is speaking
-                
-                const inputData = e.inputBuffer.getChannelData(0);
-                
-                // Check if there's actual audio (not silence)
-                let hasAudio = false;
-                for (let i = 0; i < inputData.length; i += 100) {
-                    if (Math.abs(inputData[i]) > 0.01) {
-                        hasAudio = true;
-                        break;
-                    }
-                }
-                
-                if (hasAudio) {
-                    setState('listening');
-                    const pcmData = float32ToPcm16(inputData);
-                    const base64 = arrayBufferToBase64(pcmData);
-                    
-                    ws.send(JSON.stringify({
-                        realtimeInput: {
-                            mediaChunks: [{
-                                mimeType: "audio/pcm;rate=16000",
-                                data: base64
-                            }]
-                        }
-                    }));
-                }
-            };
-            
-            source.connect(processor);
-            processor.connect(micContext.destination);
-            log('Microphone capture active.', 'sys');
-        }
-
-        // ═══════════════════════════════════════════════════════════
-        // WEBSOCKET CONNECTION TO GEMINI
-        // ═══════════════════════════════════════════════════════════
-        function connectWebSocket(apiKey) {
-            log('Establishing uplink to Gemini...', 'sys');
-            debugDot.className = '';
-            
-            ws = new WebSocket(`${WS_URL}?key=${apiKey}`);
-            
-            ws.onopen = () => {
-                log('WebSocket connected. Sending configuration...', 'sys');
-                debugDot.className = 'connected';
-                
-                const voice = localStorage.getItem('jarvis_voice') || 'Charon';
-                
-                const setupMsg = {
-                    setup: {
-                        model: MODEL,
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: {
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: voice }
-                                }
-                            }
-                        },
-                        systemInstruction: {
-                            parts: [{
-                                text: "You are JARVIS, Tony Stark's AI assistant. Be concise, helpful, and address the user as 'Sir'. Keep responses brief (1-2 sentences) unless asked for detail."
-                            }]
+    ws.onopen = () => {
+        log('Step 3 OK: WebSocket OPEN. Sending setup...', 'ok');
+        dot.className = 'warn';
+        
+        const voice = localStorage.getItem('jarvis_voice') || 'Charon';
+        
+        const setupMsg = {
+            setup: {
+                model: currentModel,
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: voice }
                         }
                     }
-                };
-                
-                ws.send(JSON.stringify(setupMsg));
-            };
-            
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleServerMessage(data);
-                } catch (e) {
-                    console.error('Parse error:', e);
+                },
+                systemInstruction: {
+                    parts: [{ text: "You are JARVIS, Tony Stark's AI. Be concise. Address user as 'Sir'. Keep responses to 1-2 sentences." }]
                 }
-            };
-            
-            ws.onerror = (err) => {
-                log('WebSocket ERROR - Check API key.', 'err');
-                debugDot.className = 'error';
-                console.error('WS Error:', err);
-            };
-            
-            ws.onclose = () => {
-                log('Connection closed.', 'err');
-                debugDot.className = 'error';
-                setState('idle');
-            };
-        }
+            }
+        };
+        
+        log(`Setup payload: ${JSON.stringify(setupMsg).substring(0, 200)}...`, 'sys');
+        ws.send(JSON.stringify(setupMsg));
+    };
 
-        // ═══════════════════════════════════════════════════════════
-        // HANDLE SERVER RESPONSES
-        // ═══════════════════════════════════════════════════════════
-        function handleServerMessage(data) {
-            // Setup complete
-            if (data.setupComplete) {
-                log('JARVIS online. Speak now.', 'sys');
-                setState('idle');
-                statusText.textContent = 'LISTENING';
-                return;
-            }
-            
-            // Server content (audio/text)
-            if (data.serverContent) {
-                const sc = data.serverContent;
-                
-                // Handle audio output
-                if (sc.modelTurn && sc.modelTurn.parts) {
-                    for (const part of sc.modelTurn.parts) {
-                        if (part.inlineData && part.inlineData.data) {
-                            playAudioChunk(part.inlineData.data);
-                        }
-                        if (part.text) {
-                            log(`JARVIS: ${part.text}`, 'ai');
-                        }
-                    }
+    ws.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            handleMessage(data);
+        } catch (e) {
+            log(`Parse error: ${e.message}`, 'err');
+        }
+    };
+
+    ws.onerror = (e) => {
+        log(`WEBSOCKET ERROR: ${e.type || 'Unknown'}`, 'err');
+        log('Possible causes: Invalid API key, model not available, or Live API not enabled.', 'err');
+        dot.className = '';
+        setState('error');
+    };
+
+    ws.onclose = (e) => {
+        log(`WebSocket CLOSED: code=${e.code}, reason=${e.reason || 'none'}`, 'err');
+        dot.className = '';
+        setState('error');
+        
+        // Specific close codes
+        if (e.code === 1006) log('Code 1006: Connection failed. Check API key & network.', 'err');
+        if (e.code === 1008) log('Code 1008: Policy violation. API key may be invalid.', 'err');
+        if (e.code === 1011) log('Code 1011: Server error. Model may be unavailable.', 'err');
+    };
+}
+
+// ── Message Handler ──
+function handleMessage(data) {
+    // Setup complete
+    if (data.setupComplete) {
+        log('✅ SETUP COMPLETE — JARVIS IS ONLINE!', 'ok');
+        dot.className = 'on';
+        setState('idle');
+        return;
+    }
+
+    // Setup error
+    if (data.error) {
+        log(`❌ API ERROR: ${JSON.stringify(data.error)}`, 'err');
+        setState('error');
+        return;
+    }
+
+    // Server content
+    if (data.serverContent) {
+        const sc = data.serverContent;
+        
+        // Audio output
+        if (sc.modelTurn && sc.modelTurn.parts) {
+            for (const part of sc.modelTurn.parts) {
+                if (part.inlineData && part.inlineData.data) {
+                    playAudio(part.inlineData.data);
                 }
-                
-                // Handle transcription of JARVIS speech
-                if (sc.outputTranscription && sc.outputTranscription.text) {
-                    // Could display this if needed
-                }
-                
-                // Handle transcription of user speech
-                if (sc.inputTranscription && sc.inputTranscription.text) {
-                    log(`You: ${sc.inputTranscription.text}`, 'user');
-                }
-                
-                // Turn complete
-                if (sc.turnComplete) {
-                    setState('idle');
-                }
-            }
-            
-            // Tool calls (if any)
-            if (data.toolCall) {
-                setState('thinking');
-                log('Processing tool call...', 'sys');
-                // For web version, we just acknowledge
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.send(JSON.stringify({
-                        toolResponse: {
-                            functionResponses: [{
-                                id: data.toolCall.functionCalls[0]?.id || 'unknown',
-                                name: data.toolCall.functionCalls[0]?.name || 'unknown',
-                                response: { result: 'Web version - tool not available' }
-                            }]
-                        }
-                    }));
+                if (part.text) {
+                    log(`JARVIS: ${part.text}`, 'ai');
                 }
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // AUDIO PLAYBACK — THE CRITICAL FIX
-        // ═══════════════════════════════════════════════════════════
-        function playAudioChunk(base64Data) {
-            setState('speaking');
-            isPlaying = true;
-            
-            try {
-                // Decode base64 to binary
-                const binaryString = atob(base64Data);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
-                
-                // Convert 16-bit PCM to Float32
-                const pcm16 = new Int16Array(bytes.buffer);
-                const float32 = new Float32Array(pcm16.length);
-                for (let i = 0; i < pcm16.length; i++) {
-                    float32[i] = pcm16[i] / 32768.0;
-                }
-                
-                // Create and play audio buffer
-                const audioBuffer = playContext.createBuffer(1, float32.length, 24000);
-                audioBuffer.getChannelData(0).set(float32);
-                
-                const source = playContext.createBufferSource();
-                source.buffer = audioBuffer;
-                source.connect(playContext.destination);
-                
-                source.onended = () => {
-                    // Small delay before marking as not playing
-                    setTimeout(() => {
-                        isPlaying = false;
-                        setState('idle');
-                    }, 100);
-                };
-                
-                source.start(0);
-                
-            } catch (err) {
-                console.error('Playback error:', err);
-                isPlaying = false;
-                setState('idle');
-            }
+        // Input transcription (what you said)
+        if (sc.inputTranscription && sc.inputTranscription.text) {
+            log(`You: ${sc.inputTranscription.text}`, 'user');
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // AUDIO CONVERSION UTILITIES
-        // ═══════════════════════════════════════════════════════════
-        function float32ToPcm16(float32Array) {
-            const pcm16 = new Int16Array(float32Array.length);
-            for (let i = 0; i < float32Array.length; i++) {
-                const s = Math.max(-1, Math.min(1, float32Array[i]));
-                pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-            }
-            return pcm16.buffer;
+        // Output transcription (what JARVIS said)
+        if (sc.outputTranscription && sc.outputTranscription.text) {
+            // Already logged via text parts
         }
 
-        function arrayBufferToBase64(buffer) {
-            const bytes = new Uint8Array(buffer);
-            let binary = '';
-            const chunkSize = 8192;
-            for (let i = 0; i < bytes.length; i += chunkSize) {
-                const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-                binary += String.fromCharCode.apply(null, chunk);
-            }
-            return btoa(binary);
+        // Turn complete
+        if (sc.turnComplete) {
+            setState('idle');
         }
+    }
 
-        // ═══════════════════════════════════════════════════════════
-        // UI HELPERS
-        // ═══════════════════════════════════════════════════════════
-        function setState(state) {
-            reactor.className = 'arc-reactor ' + state;
-            const labels = {
-                'idle': 'LISTENING',
-                'listening': 'HEARING...',
-                'thinking': 'PROCESSING...',
-                'speaking': 'SPEAKING...'
-            };
-            statusText.textContent = labels[state] || 'ONLINE';
+    // Tool calls
+    if (data.toolCall) {
+        setState('thinking');
+        log('Tool call received (web version: acknowledging)', 'sys');
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            const calls = data.toolCall.functionCalls || [];
+            const responses = calls.map(fc => ({
+                id: fc.id || 'unknown',
+                name: fc.name || 'unknown',
+                response: { result: 'Web version - tool not available locally' }
+            }));
+            ws.send(JSON.stringify({ toolResponse: { functionResponses: responses } }));
         }
+    }
+}
 
-        function log(text, type = 'sys') {
-            const div = document.createElement('div');
-            div.className = `log-${type}`;
-            div.textContent = `> ${text}`;
-            logPanel.appendChild(div);
-            logPanel.scrollTop = logPanel.scrollHeight;
-            
-            // Keep only last 50 entries
-            while (logPanel.children.length > 50) {
-                logPanel.removeChild(logPanel.firstChild);
-            }
+// ── Mic Capture ──
+function startMic() {
+    log('Step 4: Starting microphone capture...', 'sys');
+    const source = micCtx.createMediaStreamSource(micStream);
+    const processor = micCtx.createScriptProcessor(4096, 1, 1);
+    
+    processor.onaudioprocess = (e) => {
+        if (!ws || ws.readyState !== WebSocket.OPEN) return;
+        if (isPlaying) return;
+        
+        const input = e.inputBuffer.getChannelData(0);
+        
+        // Silence detection
+        let hasAudio = false;
+        for (let i = 0; i < input.length; i += 50) {
+            if (Math.abs(input[i]) > 0.015) { hasAudio = true; break; }
         }
-
-        // ═══════════════════════════════════════════════════════════
-        // SETTINGS
-        // ═══════════════════════════════════════════════════════════
-        function openSettings() {
-            document.getElementById('s-api-key').value = localStorage.getItem('jarvis_api_key') || '';
-            document.getElementById('s-voice').value = localStorage.getItem('jarvis_voice') || 'Charon';
-            document.getElementById('settings-modal').classList.remove('hidden');
+        
+        if (hasAudio) {
+            setState('listening');
+            const pcm = float32ToPcm16(input);
+            const b64 = bufferToBase64(pcm);
+            ws.send(JSON.stringify({
+                realtimeInput: { mediaChunks: [{ mimeType: "audio/pcm;rate=16000", data: b64 }] }
+            }));
         }
+    };
+    
+    source.connect(processor);
+    processor.connect(micCtx.destination);
+    log('Step 4 OK: Mic capture active. Speak now.', 'ok');
+}
 
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
+// ── Audio Playback ──
+function playAudio(base64Data) {
+    setState('speaking');
+    isPlaying = true;
+    
+    try {
+        const binary = atob(base64Data);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        
+        const pcm16 = new Int16Array(bytes.buffer);
+        const float32 = new Float32Array(pcm16.length);
+        for (let i = 0; i < pcm16.length; i++) float32[i] = pcm16[i] / 32768.0;
+        
+        const buffer = playCtx.createBuffer(1, float32.length, 24000);
+        buffer.getChannelData(0).set(float32);
+        
+        const src = playCtx.createBufferSource();
+        src.buffer = buffer;
+        src.connect(playCtx.destination);
+        src.onended = () => { setTimeout(() => { isPlaying = false; setState('idle'); }, 100); };
+        src.start(0);
+    } catch (e) {
+        log(`Playback error: ${e.message}`, 'err');
+        isPlaying = false;
+    }
+}
 
-        function saveSettings() {
-            const newKey = document.getElementById('s-api-key').value.trim();
-            const newVoice = document.getElementById('s-voice').value;
-            
-            if (newKey) localStorage.setItem('jarvis_api_key', newKey);
-            localStorage.setItem('jarvis_voice', newVoice);
-            
-            closeSettings();
-            
-            // Reconnect if connected
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.close();
-                setTimeout(() => {
-                    const key = localStorage.getItem('jarvis_api_key');
-                    if (key) connectWebSocket(key);
-                }, 500);
-            }
-            
-            log('Settings saved. Reconnecting...', 'sys');
-        }
+// ── Utilities ──
+function float32ToPcm16(f32) {
+    const pcm = new Int16Array(f32.length);
+    for (let i = 0; i < f32.length; i++) {
+        const s = Math.max(-1, Math.min(1, f32[i]));
+        pcm[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+    }
+    return pcm.buffer;
+}
 
-        // Keyboard shortcut to interrupt
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                isPlaying = false;
-                setState('idle');
-            }
-        });
-    </script>
+function bufferToBase64(buf) {
+    const bytes = new Uint8Array(buf);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += 8192) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + 8192, bytes.length)));
+    }
+    return btoa(binary);
+}
+
+// ── Settings ──
+function openSettings() {
+    document.getElementById('s-key').value = localStorage.getItem('jarvis_key') || '';
+    document.getElementById('s-voice').value = localStorage.getItem('jarvis_voice') || 'Charon';
+    document.getElementById('s-model').value = currentModel;
+    document.getElementById('settings-modal').classList.remove('hidden');
+}
+function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+function saveSettings() {
+    const k = document.getElementById('s-key').value.trim();
+    const v = document.getElementById('s-voice').value;
+    const m = document.getElementById('s-model').value;
+    if (k) localStorage.setItem('jarvis_key', k);
+    localStorage.setItem('jarvis_voice', v);
+    localStorage.setItem('jarvis_model', m);
+    currentModel = m;
+    closeSettings();
+    if (ws) { ws.close(); setTimeout(() => connect(localStorage.getItem('jarvis_key')), 500); }
+    log('Settings saved. Reconnecting...', 'sys');
+}
+</script>
 </body>
 </html>
